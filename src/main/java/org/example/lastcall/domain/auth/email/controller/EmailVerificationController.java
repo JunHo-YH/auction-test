@@ -7,9 +7,7 @@ import org.example.lastcall.domain.auth.email.dto.SendEmailVerificationCodeDto;
 import org.example.lastcall.domain.auth.email.service.EmailVerificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +19,12 @@ public class EmailVerificationController {
     public ResponseEntity<Void> sendEmailVerificationCode(
             @Valid @RequestBody SendEmailVerificationCodeDto.Request request) {
         emailVerificationService.sendEmailVerificationCode(request);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/api/v1/users/email/{email}/availability")
+    public ResponseEntity<Void> validateDuplicateEmail(@PathVariable String email) {
+        emailVerificationService.validateDuplicateEmail(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

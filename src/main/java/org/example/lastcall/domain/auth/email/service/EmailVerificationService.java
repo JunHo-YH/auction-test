@@ -53,4 +53,11 @@ public class EmailVerificationService {
 
     }
 
+    @Transactional(readOnly = true)
+    public void validateDuplicateEmail(final String email) {
+        boolean existsAlreadyEmail = userRepository.existsByEmail(email);
+        if (existsAlreadyEmail) {
+            throw new RuntimeException("이미 존재하는 이메일입니다.");
+        }
+    }
 }
