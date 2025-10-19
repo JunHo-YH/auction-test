@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity extends SoftDelete{
+    // TODO:: SoftDelete -> Interface로 분리하여 SoftDelete가 필요한 상황에만 적절히 상속(구현)하기.
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;

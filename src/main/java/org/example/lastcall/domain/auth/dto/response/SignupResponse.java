@@ -1,4 +1,4 @@
-package org.example.lastcall.domain.auth.signup.dto.response;
+package org.example.lastcall.domain.auth.dto.response;
 
 public class SignupResponse {
     private final String username;

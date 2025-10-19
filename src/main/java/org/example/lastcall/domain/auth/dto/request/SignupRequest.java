@@ -1,17 +1,12 @@
-package org.example.lastcall.domain.auth.signup.dto.request;
+package org.example.lastcall.domain.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
 import org.example.lastcall.common.validation.UniqueNickname;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignupRequest {
     @NotBlank(message = "사용자 이름은 필수입니다.")
     private String username;
