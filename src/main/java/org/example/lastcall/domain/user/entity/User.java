@@ -1,7 +1,9 @@
 package org.example.lastcall.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.example.lastcall.common.entity.BaseEntity;
 import org.example.lastcall.domain.user.enums.Role;
 
@@ -25,7 +27,7 @@ public class User extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true, length = 30)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 50)
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
 
     @Column(name = "nickname", nullable = false, unique = true)
@@ -47,8 +49,24 @@ public class User extends BaseEntity {
     @Column(name = "user_role", nullable = false, length = 5)
     private Role userRole; // ENUM(ADMIN, USER)
 
-    // 기본 기능 구현 후 구현 예정
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "user_role", nullable = false, length = 10)
-//    private UserRole userRole;
+    private User(UUID publicId, String username, String nickname, String email, String password,
+                 String address, String postcode, String detailAddress, String phoneNumber, Role userRole) {
+        this.publicId = publicId;
+        this.username = username;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.address = address;
+        this.postcode = postcode;
+        this.detailAddress = detailAddress;
+        this.phoneNumber = phoneNumber;
+        this.userRole = userRole;
+    }
+
+    public static User createForSignUp(UUID publicId, String username, String nickname, String email,
+                                       String encodedPassword, String address, String postcode,
+                                       String detailAddress, String phoneNumber, Role userRole) {
+        return new User(publicId, username, nickname, email, encodedPassword,
+                address, postcode, detailAddress, phoneNumber, userRole);
+    }
 }

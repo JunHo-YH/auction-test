@@ -26,6 +26,10 @@ repositories {
 
 dependencies {
 
+
+    // Bcrypt
+    implementation 'at.favre.lib:bcrypt:0.10.2'
+
     // Email Sender
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
