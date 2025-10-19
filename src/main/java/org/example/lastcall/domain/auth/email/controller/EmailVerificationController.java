@@ -4,6 +4,7 @@ package org.example.lastcall.domain.auth.email.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.lastcall.domain.auth.email.dto.SendEmailVerificationCodeDto;
+import org.example.lastcall.domain.auth.email.dto.VerifyEmailVerificationCodeDto;
 import org.example.lastcall.domain.auth.email.service.EmailVerificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,4 +28,12 @@ public class EmailVerificationController {
         emailVerificationService.validateDuplicateEmail(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @PutMapping("/api/v1/email-verifications/status")
+    public ResponseEntity<VerifyEmailVerificationCodeDto.Response> verifyEmailVerificationCode(
+            @Valid @RequestBody VerifyEmailVerificationCodeDto.Request request) {
+        return ResponseEntity.status(HttpStatus.OK).body(emailVerificationService.verifyEmailVerificationCode(request));
+    }
+
+
 }

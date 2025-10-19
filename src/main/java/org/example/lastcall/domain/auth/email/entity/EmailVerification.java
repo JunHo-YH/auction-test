@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.example.lastcall.common.entity.BaseEntity;
 import org.example.lastcall.domain.auth.email.model.EmailVerificationStatus;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -41,5 +42,15 @@ public class EmailVerification extends BaseEntity {
 
     public static EmailVerification create(UUID publicId, String verificationCode, String email) {
         return new EmailVerification(publicId, verificationCode, email);
+    }
+
+    public void updateStatus(EmailVerificationStatus status) {
+        this.status = status;
+    }
+
+    public void validateVerificationCode(final String requestedVerificationCode) {
+        if (!Objects.equals(requestedVerificationCode, verificationCode)) {
+            throw new RuntimeException("인증번호가 일치하지 않습니다.");
+        }
     }
 }

@@ -3,9 +3,12 @@ package org.example.lastcall.domain.auth.email.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.lastcall.common.util.GeneratorUtil;
+import org.example.lastcall.domain.auth.email.configuration.EmailConfiguration;
 import org.example.lastcall.domain.auth.email.dto.SendEmailVerificationCodeDto;
+import org.example.lastcall.domain.auth.email.dto.VerifyEmailVerificationCodeDto;
 import org.example.lastcall.domain.auth.email.entity.EmailVerification;
-import org.example.lastcall.domain.auth.email.repository.EmailRepository;
+import org.example.lastcall.domain.auth.email.model.EmailVerificationStatus;
+import org.example.lastcall.domain.auth.email.repository.EmailVerificationRepository;
 import org.example.lastcall.domain.auth.email.util.VerificationCodeGenerator;
 import org.example.lastcall.domain.user.repository.UserRepository;
 import org.springframework.mail.MailException;
@@ -14,6 +17,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,7 +29,7 @@ public class EmailVerificationService {
 
     private final UserRepository userRepository;
     private final JavaMailSender javaMailSender;
-    private final EmailRepository emailRepository;
+    private final EmailVerificationRepository emailVerificationRepository;
 
     @Transactional
     public void sendEmailVerificationCode(final SendEmailVerificationCodeDto.Request request) {
@@ -33,7 +41,7 @@ public class EmailVerificationService {
                 request.email()
         );
 
-        emailRepository.save(emailVerification);
+        emailVerificationRepository.save(emailVerification);
 
         // TODO:: 하루에 메일 당 최대 10번 요청 가능, 한번 요청 후 30초 후 요청 가능
         sendEmail(request.email(), verificationCode);
@@ -58,6 +66,29 @@ public class EmailVerificationService {
         boolean existsAlreadyEmail = userRepository.existsByEmail(email);
         if (existsAlreadyEmail) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
+        }
+    }
+
+
+    @Transactional
+    public VerifyEmailVerificationCodeDto.Response verifyEmailVerificationCode(final VerifyEmailVerificationCodeDto.Request request) {
+        EmailVerification emailVerification = emailVerificationRepository.findFirstByEmailOrderByCreatedAtDesc(request.email())
+                .orElseThrow(() -> new RuntimeException("잘못된 요청입니다."));
+
+        LocalDateTime createdAt = emailVerification.getCreatedAt();
+        UUID verificationPublicId = emailVerification.getPublicId();
+
+        validateExpiredVerificationCode(createdAt);
+        emailVerification.validateVerificationCode(request.verificationCode());
+        emailVerification.updateStatus(EmailVerificationStatus.VERIFIED);
+
+        return new VerifyEmailVerificationCodeDto.Response(verificationPublicId);
+    }
+
+    private void validateExpiredVerificationCode(final LocalDateTime createdAt) {
+        long compareRequestTime = Duration.between(createdAt, LocalDateTime.now()).getSeconds();
+        if (compareRequestTime > EmailConfiguration.POSSIBLE_REQUEST_TIME) {
+            throw new RuntimeException("이메일 인증 시간 만료");
         }
     }
 }
