@@ -43,8 +43,6 @@ public class AuthController {
     @DeleteMapping("/tokens")
     public ResponseEntity<Void> userLogout(@CookieValue(name = CookieUtil.REFRESH_COOKIE) String refreshToken) {
         authService.userLogout(refreshToken);
-        //  HTTP 사이트 -> TLS(AWS) -> HTTPS
-        // gravy.kr -> http:80 -> TLS(보안 검증 문서) -> https:443
         ResponseCookie deleteAccessCookie = cookieUtil.deleteCookieOfAccessToken();
         ResponseCookie deleteRefreshCookie = cookieUtil.deleteCookieOfRefreshToken();
 
