@@ -5,7 +5,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties({
-        org.example.lastcall.common.config.MailProperties.class,
+        MailProperties.class,
+        JwtProperties.class,
+        AuthProperties.class
 })
 public class PropertiesConfiguration {
 }

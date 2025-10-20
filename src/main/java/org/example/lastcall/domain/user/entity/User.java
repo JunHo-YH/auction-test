@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.lastcall.common.config.PasswordEncoder;
 import org.example.lastcall.common.entity.BaseEntity;
 import org.example.lastcall.domain.user.enums.Role;
 
@@ -27,7 +28,7 @@ public class User extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true, length = 30)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 60)
+    @Column(name = "password", nullable = false, length = 60) // Bcrypt
     private String password;
 
     @Column(name = "nickname", nullable = false, unique = true)
@@ -68,5 +69,11 @@ public class User extends BaseEntity {
                                        String detailAddress, String phoneNumber, Role userRole) {
         return new User(publicId, username, nickname, email, encodedPassword,
                 address, postcode, detailAddress, phoneNumber, userRole);
+    }
+
+    public void validatePassword(PasswordEncoder passwordEncoder, String requestedPassword) {
+        if (!passwordEncoder.matches(requestedPassword, password)) {
+            throw new RuntimeException("인증에 실패하였습니다.");
+        }
     }
 }
